@@ -12,16 +12,14 @@ const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth");
  *
  **/
 
-router.get("/", 
-  ensureLoggedIn,
-  async function (req, res, next) {
-    try {
-      results = await User.all();
-      return res.json({ users: results })
-    } catch (err) {
-      return next(err)
-    }
-  });
+router.get("/", ensureLoggedIn, async function (req, res, next) {
+  try {
+    results = await User.all();
+    return res.json({ users: results });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 /** GET /:username - get detail of users.
  *
@@ -29,20 +27,17 @@ router.get("/",
  *
  **/
 
-router.get("/:username",
-  ensureCorrectUser,
-  async function(req, res, next) {
-    try {
-      results = await User.get(req.params.username);
-      if (results) {
-        return res.json({ user: results })
-      }
-      throw new ExpressError("", 400);
-    } catch (err) {
-      return next(err)
+router.get("/:username", ensureCorrectUser, async function (req, res, next) {
+  try {
+    results = await User.get(req.params.username);
+    if (results) {
+      return res.json({ user: results });
     }
-  });
-
+    throw new ExpressError("", 400);
+  } catch (err) {
+    return next(err);
+  }
+});
 
 /** GET /:username/to - get messages to user
  *
@@ -54,17 +49,14 @@ router.get("/:username",
  *
  **/
 
- router.get("/:username/to",
-  ensureCorrectUser,
-  async function(req, res, next) {
-    try {
-      results = await User.messagesTo(req.params.username);
-      return res.json({ messages: results })
-    } catch(err) {
-      return next(err)
-    }
-  });
-
+router.get("/:username/to", ensureCorrectUser, async function (req, res, next) {
+  try {
+    results = await User.messagesTo(req.params.username);
+    return res.json({ messages: results });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 /** GET /:username/from - get messages from user
  *
@@ -76,15 +68,17 @@ router.get("/:username",
  *
  **/
 
- router.get("/:username/from",
+router.get(
+  "/:username/from",
   ensureCorrectUser,
-  async function(req, res, next) {
+  async function (req, res, next) {
     try {
       results = await User.messagesFrom(req.params.username);
-      return res.json({ messages: results })
-    } catch(err) {
-      return next(err)
+      return res.json({ messages: results });
+    } catch (err) {
+      return next(err);
     }
-  });
+  }
+);
 
- module.exports = router;
+module.exports = router;

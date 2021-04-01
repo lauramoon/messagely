@@ -5,9 +5,7 @@ const app = require("../app");
 const db = require("../db");
 const User = require("../models/user");
 
-
 describe("Auth Routes Test", function () {
-
   beforeEach(async function () {
     await db.query("DELETE FROM messages");
     await db.query("DELETE FROM users");
@@ -25,20 +23,18 @@ describe("Auth Routes Test", function () {
 
   describe("POST /auth/register", function () {
     test("can register", async function () {
-      let response = await request(app)
-        .post("/auth/register")
-        .send({
-          username: "bob",
-          password: "secret",
-          first_name: "Bob",
-          last_name: "Smith",
-          phone: "+14150000000"
-        });
+      let response = await request(app).post("/auth/register").send({
+        username: "bob",
+        password: "secret",
+        first_name: "Bob",
+        last_name: "Smith",
+        phone: "+14150000000",
+      });
 
       let token = response.body.token;
       expect(jwt.decode(token)).toEqual({
         username: "bob",
-        iat: expect.any(Number)
+        iat: expect.any(Number),
       });
     });
   });
@@ -54,7 +50,7 @@ describe("Auth Routes Test", function () {
       let token = response.body.token;
       expect(jwt.decode(token)).toEqual({
         username: "test1",
-        iat: expect.any(Number)
+        iat: expect.any(Number),
       });
     });
 
@@ -65,7 +61,7 @@ describe("Auth Routes Test", function () {
       expect(response.statusCode).toEqual(400);
     });
 
-    test("won't login w/wrong password", async function () {
+    test("won't login w/wrong username", async function () {
       let response = await request(app)
         .post("/auth/login")
         .send({ username: "not-user", password: "password" });

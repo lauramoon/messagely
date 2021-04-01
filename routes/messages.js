@@ -4,7 +4,7 @@ const express = require("express");
 const router = new express.Router();
 const ExpressError = require("../expressError");
 const Message = require("../models/message");
-const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth");
+const { ensureLoggedIn } = require("../middleware/auth");
 
 /** GET /:id - get detail of message.
  *
@@ -57,6 +57,9 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
     }
     throw new ExpressError("Error creating message");
   } catch (err) {
+    if (err.code === "23503") {
+      return next(new ExpressError("Invalid to_username", 400));
+    }
     return next(err);
   }
 });
@@ -72,7 +75,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 router.post("/:id/read", ensureLoggedIn, async function (req, res, next) {
   try {
     const m = await Message.get(req.params.id);
-    if (m.to_user === req.user.username) {
+    if (m.to_user.username === req.user.username) {
       const result = await Message.markRead(req.params.id);
       return res.json({ message: result });
     }
@@ -81,3 +84,5 @@ router.post("/:id/read", ensureLoggedIn, async function (req, res, next) {
     return next(err);
   }
 });
+
+module.exports = router;
